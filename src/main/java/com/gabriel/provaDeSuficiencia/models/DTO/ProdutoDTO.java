@@ -1,37 +1,18 @@
 package com.gabriel.provaDeSuficiencia.models.DTO;
 
+import java.util.List;
+
+import com.gabriel.provaDeSuficiencia.models.entities.Produto;
+
 public class ProdutoDTO {
 
-    private Long id;
+    List<Produto> produtos;
 
-    private String nome;
-
-    private Long preco;
-
-    public Long getId() {
-        return id;
+    public void setProdutos(List<Produto> produtos) {
+        this.produtos = produtos;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public List<Produto> getProdutos() {
+        return produtos;
     }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public Long getPreco() {
-        return preco;
-    }
-
-    public void setPreco(Long preco) {
-        this.preco = preco;
-    }
-
-    
-
 }

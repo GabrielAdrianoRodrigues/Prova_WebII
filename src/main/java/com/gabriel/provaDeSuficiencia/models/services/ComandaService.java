@@ -2,12 +2,14 @@ package com.gabriel.provaDeSuficiencia.models.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gabriel.provaDeSuficiencia.models.DTO.ProdutoDTO;
+import com.gabriel.provaDeSuficiencia.models.DTO.UsuarioDTO;
 import com.gabriel.provaDeSuficiencia.models.entities.Produto;
 import com.gabriel.provaDeSuficiencia.models.entities.Usuario;
 import com.gabriel.provaDeSuficiencia.models.repository.ProdutoRepository;
@@ -23,10 +25,11 @@ public class ComandaService {
     @Autowired
     ProdutoRepository produtoRepository;
 
-    public List<Usuario> findAll() {
+    public List<UsuarioDTO> findAll() {
         List<Usuario> comandas = usuarioRepository.findAll(); 
+        List<UsuarioDTO> response = comandas.stream().map(x -> new UsuarioDTO(x.getIdUsuario(), x.getNomeUsuario(), x.getTelefoneUsuario())).collect(Collectors.toList());
 
-        return comandas;
+        return response;
     }
 
     public Optional<Usuario> findById(Long id) {
@@ -34,6 +37,7 @@ public class ComandaService {
     }
 
     public Usuario save(Usuario usuario) {
+        usuario.getProdutos().stream().forEach(x-> x.setUsuario(usuario));
         return usuarioRepository.save(usuario);
     }
 
@@ -46,10 +50,18 @@ public class ComandaService {
         return produtoRepository.findById(id);
     }
 
-    public Produto updateProduct(ProdutoDTO produtoDTO, Produto produto) {
-        produto.setNome(produtoDTO.getNome());
-        produto.setPreco(produtoDTO.getPreco());
-        produtoRepository.save(produto);
-        return produto;
+    public List<Produto> updateProduct(ProdutoDTO produtosDTO, Usuario usuario) {
+        List<Produto> produtos = produtosDTO.getProdutos();
+        for (Produto produtoUsuario : usuario.getProdutos() ) {
+            for (Produto produtoDTO : produtos) {
+                if (produtoUsuario.getId() == produtoDTO.getId()) {
+                    //usuarioRepository.updateProduto(produtoUsuario.getId(), produtoDTO.getNome(), produtoDTO.getPreco());
+                    produtoUsuario.setNome(produtoDTO.getNome());
+                    produtoUsuario.setPreco(produtoDTO.getPreco());
+                } 
+            }
+        }
+        usuarioRepository.save(usuario);
+        return usuario.getProdutos();
     }
 }

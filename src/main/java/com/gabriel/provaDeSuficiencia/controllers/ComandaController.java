@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gabriel.provaDeSuficiencia.models.DTO.ProdutoDTO;
-import com.gabriel.provaDeSuficiencia.models.entities.Produto;
+import com.gabriel.provaDeSuficiencia.models.DTO.UsuarioDTO;
 import com.gabriel.provaDeSuficiencia.models.entities.Usuario;
 import com.gabriel.provaDeSuficiencia.models.services.ComandaService;
 
@@ -33,7 +33,7 @@ public class ComandaController {
 
     @GetMapping(path = "comandas")
     public ResponseEntity<?> findAll() {
-        List<Usuario> response = comandaService.findAll();
+        List<UsuarioDTO> response = comandaService.findAll();
         if (response.isEmpty()) {
             return ResponseEntity.ok("A lista de comandas encontra-se vazia");
         }
@@ -55,13 +55,11 @@ public class ComandaController {
     }
 
     @PutMapping(path = "/comandas/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> putComandaById(@Valid @RequestBody ProdutoDTO produtoDTO, @PathVariable("id") Long id) {  
+    public ResponseEntity<?> putComandaById(@Valid @RequestBody ProdutoDTO produtos, @PathVariable("id") Long id) {  
+        produtos.getProdutos().stream().forEach(x -> {System.out.println(x);});
         Optional<Usuario> response = comandaService.findById(id);
         if (response.isPresent()) {
-            Optional<Produto> userProduct = comandaService.findProductById(produtoDTO.getId());
-            if (userProduct.isPresent()) {
-                return ResponseEntity.ok(comandaService.updateProduct(produtoDTO, userProduct.get()));
-            }
+            return ResponseEntity.ok(comandaService.updateProduct(produtos, response.get()));
         }
         return ResponseEntity.ok(HttpStatus.NOT_FOUND);
     }
